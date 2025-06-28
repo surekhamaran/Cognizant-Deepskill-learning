@@ -1,0 +1,16 @@
+DECLARE
+    CURSOR customer_cursor IS
+        SELECT c.CustomerID, l.LoanID, l.InterestRate
+        FROM Customers c
+        JOIN Loans l ON c.CustomerID = l.CustomerID
+        WHERE EXTRACT(YEAR FROM SYSDATE) - EXTRACT(YEAR FROM c.DOB) > 60;
+
+BEGIN
+    FOR loan_record IN customer_cursor LOOP
+        UPDATE Loans
+        SET InterestRate = InterestRate - 1
+        WHERE LoanID = loan_record.LoanID;
+
+        DBMS_OUTPUT.PUT_LINE('Applied 1% discount to loan ID: ' || loan_record.LoanID);
+    END LOOP;
+END;
